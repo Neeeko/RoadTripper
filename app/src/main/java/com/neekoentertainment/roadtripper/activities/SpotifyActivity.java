@@ -24,7 +24,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
 
     private static final int REQUEST_CODE = 1;
     private Player mPlayer;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
