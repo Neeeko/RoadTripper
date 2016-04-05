@@ -1,9 +1,12 @@
 package com.neekoentertainment.roadtripper.activities;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -15,8 +18,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 import com.neekoentertainment.roadtripper.R;
+import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 
 /**
  * Created by Nicolas on 4/3/2016.
@@ -24,13 +27,21 @@ import com.neekoentertainment.roadtripper.R;
 public class HomeActivity extends AppCompatActivity {
 
     private Bundle mSavedInstanceState;
-    private MapView mapView;
+    private MapView mMapView;
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mapView = (MapView) findViewById(R.id.mapview);
+        mMapView = (MapView) findViewById(R.id.mapview);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), SpotifyActivity.class));
+            }
+        });
         mSavedInstanceState = savedInstanceState;
         setMap();
     }
@@ -38,51 +49,51 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mapView.onStart();
+        mMapView.onStart();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        mMapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        mMapView.onPause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mapView.onStop();
+        mMapView.onStop();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        mMapView.onLowMemory();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        mMapView.onDestroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
     }
 
     private void setMap() {
         GoogleApiClient googleApiClient = ((RoadTripperApplication) getApplicationContext()).getGoogleApiClient();
         final Location mLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (mapView != null) {
-            mapView.onCreate(mSavedInstanceState);
-            mapView.getMapAsync(new OnMapReadyCallback() {
+        if (mMapView != null) {
+            mMapView.onCreate(mSavedInstanceState);
+            mMapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(@NonNull MapboxMap mapboxMap) {
 
