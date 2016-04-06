@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/grp1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/app_name"
+            android:checked="true"
+            android:icon="@drawable/default_marker"
+            android:title="@string/app_name" />
+        <item
+            android:id="@+id/all_offers"
+            android:icon="@drawable/attribution_logo"
+            android:title="pd" />
+        <item
+            android:id="@+id/essentials"
+            android:icon="@drawable/common_google_signin_btn_icon_light_disabled"
+            android:title="dd" />
+    </group>
+</menu>

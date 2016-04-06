@@ -56,9 +56,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setNavigationDrawerAndToolbars() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final Toolbar toolbar_drawer = (Toolbar) findViewById(R.id.toolbar_drawer);
-        /*tmp toolbar name in drawer menu*/
-        toolbar_drawer.setTitle("Menu");
+        //final Toolbar toolbar_drawer = (Toolbar) findViewById(R.id.toolbar_drawer);
+        /*tmp toolbar name in drawer drawer_menu*/
+        //toolbar_drawer.setTitle("Menu");
         setSupportActionBar(toolbar);
 
 
@@ -69,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
 
-                setSupportActionBar(toolbar_drawer);
+                //setSupportActionBar(toolbar_drawer);
 
                 invalidateOptionsMenu();
             }
