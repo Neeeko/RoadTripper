@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">RoadTripper</string>
     <string name="accessToken">pk.eyJ1IjoibmVlZWtvIiwiYSI6ImNpbWE0aW1vcDAzdXl0bm02YWRyN2YyMnkifQ.bQzuKwiLYnl69ECyxciVKQ</string>
+    <string name="drawer_open">Open the navigation drawer to access the menu</string>
+    <string name="drawer_close">Close the navigation drawer to return to the app</string>
 </resources>
