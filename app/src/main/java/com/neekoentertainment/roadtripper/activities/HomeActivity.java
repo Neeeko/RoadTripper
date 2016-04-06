@@ -4,8 +4,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,6 +33,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private Bundle mSavedInstanceState;
     private MapView mMapView;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
     private FloatingActionButton mFab;
 
     @Override
@@ -44,6 +51,43 @@ public class HomeActivity extends AppCompatActivity {
         });
         mSavedInstanceState = savedInstanceState;
         setMap();
+        setNavigationDrawerAndToolbars();
+    }
+
+    private void setNavigationDrawerAndToolbars() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar_drawer = (Toolbar) findViewById(R.id.toolbar_drawer);
+        /*tmp toolbar name in drawer menu*/
+        toolbar_drawer.setTitle("Menu");
+        setSupportActionBar(toolbar);
+
+
+        mapView = (MapView) findViewById(R.id.mapview);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+
+                setSupportActionBar(toolbar_drawer);
+
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+
+                setSupportActionBar(toolbar);
+
+                invalidateOptionsMenu();
+            }
+        };
+
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -86,6 +130,18 @@ public class HomeActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mMapView.onSaveInstanceState(outState);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setMap() {
