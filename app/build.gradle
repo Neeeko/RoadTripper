@@ -29,11 +29,12 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
     compile ('com.mapbox.mapboxsdk:mapbox-android-sdk:4.0.0-beta.2@aar'){
         transitive=true
     }
     compile 'com.spotify.sdk:spotify-auth:1.0.0-beta12@aar'
     compile 'com.spotify.sdk:spotify-player:1.0.0-beta12@aar'
     compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.pubnub:pubnub:3.7.8'
 }

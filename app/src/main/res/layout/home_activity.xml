@@ -43,43 +43,13 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="240dp"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:layout_margin="0dp"
-        android:background="#f0f0f0"
-        android:orientation="vertical"
-        android:paddingBottom="0dp"
-        android:paddingEnd="-4dip"
-        android:paddingStart="-4dip"
-        android:paddingTop="0dp">
-
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/toolbar_drawer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:paddingBottom="-2dip"
-            android:paddingTop="-2dip"
-            android:text="Home" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:paddingBottom="-2dip"
-            android:paddingTop="-2dip"
-            android:text="Param" />
-
-    </LinearLayout>
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/drawer_menu" />
 
 </android.support.v4.widget.DrawerLayout>
 

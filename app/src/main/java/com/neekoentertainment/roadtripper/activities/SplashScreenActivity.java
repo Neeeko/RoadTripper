@@ -4,18 +4,22 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 import com.neekoentertainment.roadtripper.R;
+import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
+import com.neekoentertainment.roadtripper.utils.MessagingManager;
 
 public class SplashScreenActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -27,6 +31,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
+        initPubnub();
         initGoogleApi();
     }
 
@@ -41,6 +46,12 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         ((RoadTripperApplication) getApplicationContext()).setGoogleApiClient(mGoogleApiClient);
     }
 
+    private void initPubnub() {
+        MessagingManager messagingManager = new MessagingManager();
+        messagingManager.startPubnub();
+        ((RoadTripperApplication) getApplicationContext()).setMessagingManager(messagingManager);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -50,7 +61,6 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     @Override
     protected void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
     }
 
     /* GOOGLE API CALLBACKS */
@@ -62,6 +72,8 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         } else {
             startHomeActivity();
         }
+        if (mGoogleApiClient.isConnected())
+            Log.d("Test", "cette merde est connectée");
     }
 
     @Override
@@ -79,13 +91,13 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         switch (requestCode) {
             case MY_PERMISSION_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startHomeActivity();
+                } else {
+                    finish();
                 }
                 break;
             }
-
         }
     }
 
@@ -100,7 +112,20 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     }
 
     private void startHomeActivity() {
-        startActivity(new Intent(this, HomeActivity.class));
-        finish();
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+        if (button != null) {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (editText != null && !editText.getText().toString().isEmpty() && !editText.getText().toString().equals("")) {
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        intent.putExtra("username", editText.getText().toString());
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            });
+        }
     }
 }
