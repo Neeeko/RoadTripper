@@ -2,6 +2,7 @@ package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -123,7 +124,12 @@ public class HomeActivity extends AppCompatActivity {
             navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem item) {
-                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+
+                    if (item.getTitle().toString().equals("Spotify")) {
+                        Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
+                        startActivity(intent);
+                    }
+
                     return true;
                 }
             });
