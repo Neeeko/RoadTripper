@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">RoadTripper</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibmVlZWtvIiwiYSI6ImNpbWE0aW1vcDAzdXl0bm02YWRyN2YyMnkifQ.bQzuKwiLYnl69ECyxciVKQ</string>
     <string name="spotify_client_id">254be1f74d704c5286dab2feca48da7a</string>
     <string name="spotify_redirect_uri">roadtripper://callback</string>
     <string name="drawer_open">Open the navigation drawer to access the menu</string>
