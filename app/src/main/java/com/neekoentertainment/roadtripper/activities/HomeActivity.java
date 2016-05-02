@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ import java.util.Date;
  */
 public class HomeActivity extends AppCompatActivity {
 
+    private ActionBarDrawerToggle mDrawerToggle;
     private Marker myLastPos;
     private Marker myFriendLastPos;
     private boolean isFirstLaunch = true;
@@ -116,7 +118,6 @@ public class HomeActivity extends AppCompatActivity {
     private void setNavigationDrawerAndToolbars() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         if (navigationView != null) {
@@ -128,7 +129,19 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
         }
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
 
         if (mDrawerLayout != null) {
             mDrawerLayout.addDrawerListener(mDrawerToggle);
@@ -144,6 +157,19 @@ public class HomeActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
+    }
+
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setMap() {
