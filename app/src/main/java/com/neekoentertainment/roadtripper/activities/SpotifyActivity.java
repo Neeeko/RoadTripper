@@ -1,9 +1,14 @@
 package com.neekoentertainment.roadtripper.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.neekoentertainment.roadtripper.R;
@@ -24,10 +29,29 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
 
     private static final int REQUEST_CODE = 1;
     private Player mPlayer;
-    
+    private boolean mIsPaused;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.spotify_activity);
+
+        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
+        ImageButton prevButton = (ImageButton) findViewById(R.id.prevButton);
+        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+
+        if (playButton != null)
+            playButton.setEnabled(false);
+        if (prevButton != null)
+            prevButton.setEnabled(false);
+        if (nextButton != null)
+            nextButton.setEnabled(false);
+        if (pauseButton != null)
+            pauseButton.setEnabled(false);
+
+        mIsPaused = false;
+
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(getString(R.string.spotify_client_id),
                 AuthenticationResponse.Type.TOKEN,
                 getString(R.string.spotify_redirect_uri));
@@ -64,7 +88,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
                         public void onInitialized(Player player) {
                             mPlayer.addConnectionStateCallback(SpotifyActivity.this);
                             mPlayer.addPlayerNotificationCallback(SpotifyActivity.this);
-                            mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
+                            activateButtons();
                         }
 
                         @Override
@@ -78,6 +102,42 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             }
         }
     }
+
+    public void activateButtons() {
+        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
+        ImageButton prevButton = (ImageButton) findViewById(R.id.prevButton);
+        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+
+        if (playButton != null)
+            playButton.setEnabled(true);
+        if (prevButton != null)
+            prevButton.setEnabled(true);
+        if (nextButton != null)
+            nextButton.setEnabled(true);
+        if (pauseButton != null)
+            pauseButton.setEnabled(true);
+    }
+
+    public void onPlayClicked(View view) {
+        if (!mIsPaused)
+            mPlayer.play("spotify:user:tommikohn:playlist:7qfB2KGVfhUpFhjK5Lnxr0");
+        else
+            mPlayer.resume();
+    }
+
+    public void onPauseClicked(View view) {
+        mPlayer.pause();
+    }
+
+    public void onNextClicked(View view) {
+        mPlayer.skipToNext();
+    }
+
+    public void onPrevClicked(View view) {
+        mPlayer.skipToPrevious();
+    }
+
 
     @Override
     public void onLoggedIn() {

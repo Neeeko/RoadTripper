@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    tools:context=".activities.SpotifyActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/CurrentSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:text="PLACEHOLDER"
+        />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        tools:context=".activities.SpotifyActivity">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:id="@+id/prevButton"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"
+            android:layout_weight="0.25"
+            android:background="@android:drawable/ic_media_previous"
+            android:backgroundTint="#000000"
+            android:onClick="onPrevClicked"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:id="@+id/playButton"
+            android:padding="20dp"
+            android:background="@android:drawable/ic_media_play"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:contentDescription="PlayButtton"
+            android:layout_weight="0.25"
+            android:backgroundTint="#000000"
+            android:onClick="onPlayClicked"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:id="@+id/pauseButton"
+            android:layout_weight="0.25"
+            android:background="@android:drawable/ic_media_pause"
+            android:backgroundTint="#000000"
+            android:onClick="onPauseClicked"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:id="@+id/nextButton"
+            android:padding="20dp"
+            android:layout_weight="0.25"
+            android:background="@android:drawable/ic_media_next"
+            android:scaleType="fitXY"
+            android:backgroundTint="#000000"
+            android:onClick="onNextClicked"
+            />
+    </LinearLayout>
+</LinearLayout>

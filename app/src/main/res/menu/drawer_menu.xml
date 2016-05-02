@@ -11,10 +11,10 @@
         <item
             android:id="@+id/all_offers"
             android:icon="@drawable/attribution_logo"
-            android:title="pd" />
+            android:title="Spotify" />
         <item
             android:id="@+id/essentials"
             android:icon="@drawable/common_google_signin_btn_icon_light_disabled"
-            android:title="dd" />
+            android:title="Parameters" />
     </group>
 </menu>
