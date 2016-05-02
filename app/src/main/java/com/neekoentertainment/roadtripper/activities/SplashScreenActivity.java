@@ -58,11 +58,6 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         mGoogleApiClient.connect();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
     /* GOOGLE API CALLBACKS */
 
     @Override
@@ -118,11 +113,15 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (editText != null && !editText.getText().toString().isEmpty() && !editText.getText().toString().equals("")) {
-                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("username", editText.getText().toString());
-                        startActivity(intent);
-                        finish();
+                    if (editText != null) {
+                        if (!editText.getText().toString().isEmpty() && !editText.getText().toString().trim().equals("")) {
+                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                            intent.putExtra("username", editText.getText().toString());
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            editText.setError("Your name cannot be empty.");
+                        }
                     }
                 }
             });
