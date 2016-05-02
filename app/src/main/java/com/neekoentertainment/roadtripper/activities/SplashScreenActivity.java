@@ -25,6 +25,9 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         GoogleApiClient.OnConnectionFailedListener {
 
     public static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 1;
+
+    private static final String TAG = "SplashScreenActivity";
+
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -67,18 +70,16 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         } else {
             startHomeActivity();
         }
-        if (mGoogleApiClient.isConnected())
-            Log.d("Test", "cette merde est connectée");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d("SplashScreen", "Google Api Connection Suspended");
+        Log.d(TAG, "Google Api Connection Suspended");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("SplashScreen", "Google Api Connection Failed");
+        Log.e(TAG, "Google Api Connection Failed");
     }
 
     @Override
@@ -116,11 +117,11 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                     if (editText != null) {
                         if (!editText.getText().toString().isEmpty() && !editText.getText().toString().trim().equals("")) {
                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                            intent.putExtra("username", editText.getText().toString());
+                            intent.putExtra(getString(R.string.username), editText.getText().toString());
                             startActivity(intent);
                             finish();
                         } else {
-                            editText.setError("Your name cannot be empty.");
+                            editText.setError(getString(R.string.empty_user_name));
                         }
                     }
                 }

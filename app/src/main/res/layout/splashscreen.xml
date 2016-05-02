@@ -12,6 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:hint="@string/enter_name"
         android:inputType="text"
         android:maxLines="1" />
 
@@ -22,6 +23,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/editText"
-        android:text="Enter name" />
+        android:text="@string/confirm" />
 
 </RelativeLayout>

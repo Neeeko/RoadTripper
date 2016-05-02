@@ -28,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -47,6 +48,10 @@ import java.util.Date;
  * Created by Nicolas on 4/3/2016.
  */
 public class HomeActivity extends AppCompatActivity {
+
+    private static final int INTERVAL = 10000;
+    private static final int FASTEST_INTERVAL = 5000;
+    private static final String TAG = "HomeActivity";
 
     private ActionBarDrawerToggle mDrawerToggle;
     private Marker myLastPos;
@@ -75,18 +80,18 @@ public class HomeActivity extends AppCompatActivity {
                     final View dialogView = layoutInflater.inflate(R.layout.add_friend_dialog, null);
                     final EditText editText = (EditText) dialogView.findViewById(R.id.friendName);
                     alertDialogBuilder.setView(dialogView)
-                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(getString(R.string.add), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (!editText.getText().toString().isEmpty()
                                             && !editText.getText().toString().trim().equals("")) {
                                         subscribeToFriend(editText.getText().toString());
                                     } else {
-                                        Toast.makeText(context, "Friend's name cannot be empty.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, getString(R.string.empty_friend_name), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -99,8 +104,8 @@ public class HomeActivity extends AppCompatActivity {
         }
         setNavigationDrawerAndToolbars();
         setMap();
-        if (getIntent() != null && getIntent().getStringExtra("username") != null) {
-            mUsername = getIntent().getStringExtra("username");
+        if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
+            mUsername = getIntent().getStringExtra(getString(R.string.username));
         }
     }
 
@@ -109,7 +114,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private Location createLocation(double lat, double lng, String name) {
-        Location location = new Location(name + "'s position");
+        Location location = new Location(name + getString(R.string.name_position));
         location.setLatitude(lat);
         location.setLongitude(lng);
         location.setTime(new Date().getTime());
@@ -126,7 +131,7 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem item) {
 
-                    if (item.getTitle().toString().equals("Spotify")) {
+                    if (item.getTitle().toString().equals(getString(R.string.spotify))) {
                         Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
                         startActivity(intent);
                     }
@@ -211,24 +216,24 @@ public class HomeActivity extends AppCompatActivity {
                     mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }
                 if (isMyPosition) {
+                    // First position of user
                     if (myLastPos == null) {
                         myLastPos = mGoogleMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                                .title(username + "'s position"));
+                                .title(username + getString(R.string.name_position)));
                     } else {
                         myLastPos.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
                     }
                 } else {
-
-                    // First position of user
+                    // First position of friend
                     if (myFriendLastPos == null) {
                         myFriendLastPos = mGoogleMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                                .title(username + "'s position"));
+                                .title(username + getString(R.string.name_position))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                     } else {
                         myFriendLastPos.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
                     }
-                    Log.d("Test", username + "'s position changed");
                 }
             }
         });
@@ -236,8 +241,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private LocationRequest getLocationRequest() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
+        locationRequest.setInterval(INTERVAL);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
@@ -251,19 +256,18 @@ public class HomeActivity extends AppCompatActivity {
                 public void successCallback(String channel, Object message) {
                     JSONObject jsonObject = (JSONObject) message;
                     try {
-                        double mLat = jsonObject.getDouble("lat");
-                        double mLng = jsonObject.getDouble("lng");
-                        String name = jsonObject.getString("name");
+                        double mLat = jsonObject.getDouble(MessagingManager.JSON_LAT);
+                        double mLng = jsonObject.getDouble(MessagingManager.JSON_LNG);
+                        String name = jsonObject.getString(MessagingManager.JSON_NAME);
                         setPosition(createLocation(mLat, mLng, name), name, false);
-                        Log.d("Test", "Message received = " + message.toString());
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e.getMessage());
                     }
                 }
 
                 @Override
                 public void errorCallback(String channel, PubnubError error) {
-                    Log.e("HomeActivity", error.getErrorString());
+                    Log.e(TAG, error.getErrorString());
                 }
             });
             return null;

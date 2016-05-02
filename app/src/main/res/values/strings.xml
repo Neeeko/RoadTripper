@@ -4,5 +4,14 @@
     <string name="spotify_redirect_uri">roadtripper://callback</string>
     <string name="drawer_open">Open the navigation drawer to access the menu</string>
     <string name="drawer_close">Close the navigation drawer to return to the app</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="spotify">Spotify</string>
+    <string name="parameters">Parameters</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="name_position">\'s position</string>
+    <string name="empty_friend_name">Friend\'s name cannot be empty.</string>
+    <string name="empty_user_name">Your name cannot be empty.</string>
+    <string name="username">username</string>
+    <string name="enter_name">Enter your name</string>
+    <string name="confirm">Confirm</string>
 </resources>
