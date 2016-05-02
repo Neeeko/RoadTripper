@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.neekoentertainment.roadtripper.R;
@@ -21,6 +22,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 import com.spotify.sdk.android.player.Spotify;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Nicolas on 4/4/2016.
@@ -124,18 +127,55 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             mPlayer.play("spotify:user:tommikohn:playlist:7qfB2KGVfhUpFhjK5Lnxr0");
         else
             mPlayer.resume();
+
+        IntentFilter iF = new IntentFilter();
+        iF.addAction("com.android.music.metachanged");
+        iF.addAction("com.android.music.playstatechanged");
+        iF.addAction("com.android.music.playbackcomplete");
+        iF.addAction("com.android.music.queuechanged");
+
+        registerReceiver(mReceiver, iF);
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            String cmd = intent.getStringExtra("command");
+            Log.v("tag ", action + " / " + cmd);
+            String artist = intent.getStringExtra("artist");
+            String album = intent.getStringExtra("album");
+            String track = intent.getStringExtra("track");
+            TextView curSong = (TextView) findViewById(R.id.currentSong);
+            curSong.setText(track + " - " + artist + " (" + album + ")");
+        }
+
     public void onPauseClicked(View view) {
+        mIsPaused = true;
         mPlayer.pause();
     }
 
     public void onNextClicked(View view) {
         mPlayer.skipToNext();
+        IntentFilter iF = new IntentFilter();
+        iF.addAction("com.android.music.metachanged");
+        iF.addAction("com.android.music.playstatechanged");
+        iF.addAction("com.android.music.playbackcomplete");
+        iF.addAction("com.android.music.queuechanged");
+
+        registerReceiver(mReceiver, iF);
     }
 
     public void onPrevClicked(View view) {
         mPlayer.skipToPrevious();
+        IntentFilter iF = new IntentFilter();
+        iF.addAction("com.android.music.metachanged");
+        iF.addAction("com.android.music.playstatechanged");
+        iF.addAction("com.android.music.playbackcomplete");
+        iF.addAction("com.android.music.queuechanged");
+
+        registerReceiver(mReceiver, iF);
     }
 
 
