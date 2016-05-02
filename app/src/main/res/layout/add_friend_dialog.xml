@@ -12,6 +12,6 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="16dp"
-        android:hint="Friend's name"
-        android:inputType="textEmailAddress" />
+        android:inputType="text"
+        android:maxLines="1" />
 </LinearLayout>

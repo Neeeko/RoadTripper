@@ -6,15 +6,17 @@
         <item
             android:id="@+id/app_name"
             android:checked="true"
-            android:icon="@drawable/default_marker"
+            android:icon="@drawable/ic_add_white_24dp"
             android:title="@string/app_name" />
         <item
             android:id="@+id/all_offers"
-            android:icon="@drawable/attribution_logo"
+            android:icon="@drawable/ic_cast_light"
+
             android:title="Spotify" />
         <item
             android:id="@+id/essentials"
             android:icon="@drawable/common_google_signin_btn_icon_light_disabled"
+
             android:title="Parameters" />
     </group>
 </menu>
