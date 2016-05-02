@@ -150,6 +150,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             TextView curSong = (TextView) findViewById(R.id.currentSong);
             curSong.setText(track + " - " + artist + " (" + album + ")");
         }
+    };
 
     public void onPauseClicked(View view) {
         mIsPaused = true;
