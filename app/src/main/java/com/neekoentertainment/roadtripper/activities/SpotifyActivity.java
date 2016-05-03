@@ -3,12 +3,14 @@ package com.neekoentertainment.roadtripper.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.neekoentertainment.roadtripper.R;
+import com.neekoentertainment.roadtripper.utils.SharedPreferencesUtils;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -33,6 +35,23 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
         super.onCreate(savedInstanceState);
         setContentView(R.layout.spotify_activity);
 
+        initializeButtons();
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.spotify);
+        setSupportActionBar(toolbar);
+
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(getString(R.string.spotify_client_id),
+                AuthenticationResponse.Type.TOKEN,
+                getString(R.string.spotify_redirect_uri));
+        builder.setScopes(new String[]{"user-read-private", "streaming"});
+        AuthenticationRequest request = builder.build();
+
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+    }
+
+
+    protected void initializeButtons() {
         ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
         ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
         ImageButton prevButton = (ImageButton) findViewById(R.id.prevButton);
@@ -48,15 +67,8 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             pauseButton.setEnabled(false);
 
         mIsPaused = false;
-
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(getString(R.string.spotify_client_id),
-                AuthenticationResponse.Type.TOKEN,
-                getString(R.string.spotify_redirect_uri));
-        builder.setScopes(new String[]{"user-read-private", "streaming"});
-        AuthenticationRequest request = builder.build();
-
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
+
 
     @Override
     protected void onDestroy() {
@@ -118,7 +130,8 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
 
     public void onPlayClicked(View view) {
         if (!mIsPaused) {
-            mPlayer.play("spotify:user:tommikohn:playlist:7qfB2KGVfhUpFhjK5Lnxr0");
+            String spotifyURI = SharedPreferencesUtils.SPOTIFY_URI;
+            mPlayer.play(spotifyURI);
         } else {
             mPlayer.resume();
         }

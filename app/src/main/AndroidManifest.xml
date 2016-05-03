@@ -31,7 +31,6 @@
         <activity
             android:name=".activities.SpotifyActivity"
             android:screenOrientation="sensorPortrait" />
-
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
@@ -40,6 +39,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity
+            android:name=".activities.ParametersActivity"
+            android:label="@string/title_activity_parameters"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

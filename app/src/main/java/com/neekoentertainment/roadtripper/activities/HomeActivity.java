@@ -134,8 +134,10 @@ public class HomeActivity extends AppCompatActivity {
                     if (item.getTitle().toString().equals(getString(R.string.spotify))) {
                         Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
                         startActivity(intent);
+                    } else if (item.getTitle().toString().equals(getString(R.string.parameters))) {
+                        Intent intent = new Intent(getApplicationContext(), ParametersActivity.class);
+                        startActivity(intent);
                     }
-
                     return true;
                 }
             });
