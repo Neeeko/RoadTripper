@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deezer.sdk.player.PlaylistPlayer;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -55,6 +56,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private Marker myFriendLastPos;
     private boolean isFirstLaunch = true;
     private String mUsername;
+    private Long mPlaylistID;
     private GoogleApiClient mGoogleApiClient;
     private MessagingManager mMessagingManager;
     private GoogleMap mGoogleMap;
@@ -62,6 +64,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private BroadcastAsyncTask mBroadastAsyncTask;
     private SubscribeAsyncTask mSubscribeAsyncTask;
     private SupportMapFragment mMapFragment;
+    private PlaylistPlayer mPlaylistPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             titleTxt.setSelected(true);
         if (artistTxt != null)
         artistTxt.setSelected(true);
+
+        if (mPlaylistID != null)
+            mPlaylistPlayer.playPlaylist(mPlaylistID);
 
     }
 
