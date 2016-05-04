@@ -12,6 +12,7 @@ import com.neekoentertainment.roadtripper.utils.MessagingManager;
 public class RoadTripperApplication extends Application {
     private GoogleApiClient mGoogleApiClient;
     private MessagingManager mMessagingManager;
+    private String mUsername;
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
@@ -27,5 +28,13 @@ public class RoadTripperApplication extends Application {
 
     public void setMessagingManager(MessagingManager mMessagingManager) {
         this.mMessagingManager = mMessagingManager;
+    }
+
+    public String getUsername() {
+        return mUsername;
+    }
+
+    public void setUsername(String mUsername) {
+        this.mUsername = mUsername;
     }
 }

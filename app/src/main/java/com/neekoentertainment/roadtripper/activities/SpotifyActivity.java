@@ -2,9 +2,14 @@ package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -29,6 +34,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
     private static final int REQUEST_CODE = 1;
     private Player mPlayer;
     private boolean mIsPaused;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,9 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
         initializeButtons();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.spotify);
+        if (toolbar != null) {
+            toolbar.setTitle(R.string.spotify);
+        }
         setSupportActionBar(toolbar);
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(getString(R.string.spotify_client_id),
@@ -48,8 +56,67 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        setNavigationDrawerAndToolbars();
     }
 
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setNavigationDrawerAndToolbars() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(MenuItem item) {
+                    if (item.getTitle().toString().equals(getString(R.string.app_name))) {
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                    } else if (item.getTitle().toString().equals(getString(R.string.spotify))) {
+                        Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
+                        startActivity(intent);
+                    } else if (item.getTitle().toString().equals(getString(R.string.parameters))) {
+                        Intent intent = new Intent(getApplicationContext(), ParametersActivity.class);
+                        startActivity(intent);
+                    }
+                    return true;
+                }
+            });
+        }
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
+
+        if (mDrawerLayout != null) {
+            mDrawerLayout.addDrawerListener(mDrawerToggle);
+        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+        mDrawerToggle.syncState();
+    }
 
     protected void initializeButtons() {
         ImageButton playButton = (ImageButton) findViewById(R.id.playButton);

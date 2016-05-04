@@ -47,7 +47,7 @@ import java.util.Date;
 /**
  * Created by Nicolas on 4/3/2016.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements LocationListener {
 
     private static final int INTERVAL = 10000;
     private static final int FASTEST_INTERVAL = 5000;
@@ -62,10 +62,14 @@ public class HomeActivity extends AppCompatActivity {
     private MessagingManager mMessagingManager;
     private GoogleMap mGoogleMap;
     private Boolean mCameraLock = true;
+    private BroadcastAsyncTask mBroadastAsyncTask;
+    private SubscribeAsyncTask mSubscribeAsyncTask;
+    private SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initPubnub();
         setContentView(R.layout.home_activity);
         mGoogleApiClient = ((RoadTripperApplication) getApplicationContext()).getGoogleApiClient();
         mMessagingManager = ((RoadTripperApplication) getApplicationContext()).getMessagingManager();
@@ -104,13 +108,29 @@ public class HomeActivity extends AppCompatActivity {
         }
         setNavigationDrawerAndToolbars();
         setMap();
-        if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
-            mUsername = getIntent().getStringExtra(getString(R.string.username));
+        mUsername = ((RoadTripperApplication) getApplicationContext()).getUsername();
+    }
+
+    private void initPubnub() {
+        MessagingManager messagingManager = new MessagingManager();
+        messagingManager.startPubnub();
+        ((RoadTripperApplication) getApplicationContext()).setMessagingManager(messagingManager);
+    }
+
+    @Override
+    protected void onPause() {
+        if (mSubscribeAsyncTask != null && mSubscribeAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mSubscribeAsyncTask.cancel(true);
         }
+        if (mBroadastAsyncTask != null && mBroadastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mBroadastAsyncTask.cancel(true);
+        }
+        super.onPause();
     }
 
     private void subscribeToFriend(String name) {
-        new SubscribeAsyncTask().execute(name);
+        mSubscribeAsyncTask = new SubscribeAsyncTask();
+        mSubscribeAsyncTask.execute(name);
     }
 
     private Location createLocation(double lat, double lng, String name) {
@@ -130,8 +150,10 @@ public class HomeActivity extends AppCompatActivity {
             navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem item) {
-
-                    if (item.getTitle().toString().equals(getString(R.string.spotify))) {
+                    if (item.getTitle().toString().equals(getString(R.string.app_name))) {
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                    } else if (item.getTitle().toString().equals(getString(R.string.spotify))) {
                         Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
                         startActivity(intent);
                     } else if (item.getTitle().toString().equals(getString(R.string.parameters))) {
@@ -166,13 +188,6 @@ public class HomeActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mGoogleApiClient.disconnect();
-    }
-
-
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
@@ -185,22 +200,34 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStart() {
+        mMapFragment.onStart();
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        mMapFragment.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        mMapFragment.onStop();
+        super.onStop();
+    }
+
     private void setMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(new com.google.android.gms.maps.OnMapReadyCallback() {
+        mMapFragment.getMapAsync(new com.google.android.gms.maps.OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mGoogleMap = googleMap;
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 LocationRequest locationRequest = getLocationRequest();
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest,
-                        new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                new BroadcastAsyncTask().execute(location);
-                            }
-                        });
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, HomeActivity.this);
             }
         });
     }
@@ -247,6 +274,12 @@ public class HomeActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mBroadastAsyncTask = new BroadcastAsyncTask();
+        mBroadastAsyncTask.execute(location);
     }
 
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Void> {

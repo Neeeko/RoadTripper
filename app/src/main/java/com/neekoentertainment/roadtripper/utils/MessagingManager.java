@@ -62,6 +62,10 @@ public class MessagingManager {
             Log.e(TAG, e.getMessage());
         }
         Log.d(TAG, STARTING_BROADCAST + channelName);
-        mPubnub.publish(channelName, message, publishCallback);
+        if (channelName != null) {
+            mPubnub.publish(channelName, message, publishCallback);
+        } else {
+            Log.d("Test", "channel name is null");
+        }
     }
 }
