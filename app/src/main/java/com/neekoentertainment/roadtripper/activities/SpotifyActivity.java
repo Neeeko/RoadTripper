@@ -35,6 +35,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
     private Player mPlayer;
     private boolean mIsPaused;
     private ActionBarDrawerToggle mDrawerToggle;
+    private boolean mIsStopped;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +131,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
         if (nextButton != null)
             nextButton.setEnabled(false);
 
+        mIsStopped = true;
         mIsPaused = false;
     }
 
@@ -202,13 +204,17 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
     }
 
     public void onPlayPauseClicked(View view) {
-        if (!mIsPaused) {
+        if (mIsStopped) {
             String spotifyURI = SharedPreferencesUtils.SPOTIFY_URI;
             mPlayer.play(spotifyURI);
             switchPausePlayButton();
-        } else {
+            mIsStopped = false;
+        } else if (mIsPaused) {
             switchPausePlayButton();
             mPlayer.resume();
+        } else if (!mIsPaused) {
+            switchPausePlayButton();
+            mPlayer.pause();
         }
     }
 
