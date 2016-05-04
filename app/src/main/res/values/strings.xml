@@ -17,4 +17,10 @@
     <string name="button_save">Save</string>
     <string name="play_button_desc">Play button</string>
     <string name="connect_deezer">CONNECT TO DEEZER</string>
+    <string name="music_title">Title test very long title yes it is indeed</string>
+    <string name="artist_title">Artist this artist name is very long for testing</string>
+    <string name="previous_song_button">Previous song</string>
+    <string name="next_song_button">Next song</string>
+    <string name="play_pause_song_button">Play/pause song</string>
+    <string name="album_image">Album image</string>
 </resources>

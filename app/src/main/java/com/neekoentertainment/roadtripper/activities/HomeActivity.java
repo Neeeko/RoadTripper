@@ -3,6 +3,7 @@ package com.neekoentertainment.roadtripper.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,7 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -101,10 +105,45 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        initializeUiElements();
+
         setMap();
         if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
             mUsername = getIntent().getStringExtra(getString(R.string.username));
         }
+    }
+
+    protected void initializeUiElements() {
+        TextView titleTxt = (TextView) findViewById(R.id.titleText);
+        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+
+        if (titleTxt != null)
+            titleTxt.setSelected(true);
+        if (artistTxt != null)
+        artistTxt.setSelected(true);
+
+    }
+
+
+    public void onPrevClicked(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
+
+
+    }
+
+    public void onPlayPauseClicked(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
+
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        if (playPauseButton != null)
+            playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+    }
+
+    public void onNextClicked(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
+
+
     }
 
     @Override
