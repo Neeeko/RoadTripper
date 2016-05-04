@@ -52,6 +52,10 @@ public class MessagingManager {
         }
     }
 
+    public void unsubscribe(String channelName) {
+        mPubnub.unsubscribe(channelName);
+    }
+
     public void broadcastLocation(String channelName, double latitude, double longitude) {
         JSONObject message = new JSONObject();
         try {
@@ -61,11 +65,9 @@ public class MessagingManager {
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
-        Log.d(TAG, STARTING_BROADCAST + channelName);
         if (channelName != null) {
+            Log.d(TAG, STARTING_BROADCAST + channelName);
             mPubnub.publish(channelName, message, publishCallback);
-        } else {
-            Log.d("Test", "channel name is null");
         }
     }
 }

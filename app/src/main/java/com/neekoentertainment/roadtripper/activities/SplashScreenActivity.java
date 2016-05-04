@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.neekoentertainment.roadtripper.R;
 import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
+import com.neekoentertainment.roadtripper.utils.MessagingManager;
 
 public class SplashScreenActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -33,6 +34,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
+        initPubnub();
         initGoogleApi();
     }
 
@@ -45,6 +47,12 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                     .build();
         }
         ((RoadTripperApplication) getApplicationContext()).setGoogleApiClient(mGoogleApiClient);
+    }
+
+    private void initPubnub() {
+        MessagingManager messagingManager = new MessagingManager();
+        messagingManager.startPubnub();
+        ((RoadTripperApplication) getApplicationContext()).setMessagingManager(messagingManager);
     }
 
     @Override

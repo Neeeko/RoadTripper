@@ -69,7 +69,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initPubnub();
         setContentView(R.layout.home_activity);
         mGoogleApiClient = ((RoadTripperApplication) getApplicationContext()).getGoogleApiClient();
         mMessagingManager = ((RoadTripperApplication) getApplicationContext()).getMessagingManager();
@@ -108,13 +107,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         }
         setNavigationDrawerAndToolbars();
         setMap();
-        mUsername = ((RoadTripperApplication) getApplicationContext()).getUsername();
-    }
-
-    private void initPubnub() {
-        MessagingManager messagingManager = new MessagingManager();
-        messagingManager.startPubnub();
-        ((RoadTripperApplication) getApplicationContext()).setMessagingManager(messagingManager);
+        if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
+            mUsername = getIntent().getStringExtra(getString(R.string.username));
+        }
     }
 
     @Override
@@ -125,6 +120,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         if (mBroadastAsyncTask != null && mBroadastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
             mBroadastAsyncTask.cancel(true);
         }
+        mMessagingManager.unsubscribe(mUsername);
         super.onPause();
     }
 
@@ -198,24 +194,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onStart() {
-        mMapFragment.onStart();
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        mMapFragment.onResume();
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        mMapFragment.onStop();
-        super.onStop();
     }
 
     private void setMap() {
