@@ -16,5 +16,5 @@
     <string name="parameters_activity_spotify">Spotify Playlist URI</string>
     <string name="button_save">Save</string>
     <string name="play_button_desc">Play button</string>
-    <string name="connect_deezer">Connect to Deezer</string>
+    <string name="connect_deezer">CONNECT TO DEEZER</string>
 </resources>

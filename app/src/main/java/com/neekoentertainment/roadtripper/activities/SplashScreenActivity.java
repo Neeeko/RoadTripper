@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.deezer.sdk.model.PaginatedList;
@@ -63,19 +64,19 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         setContentView(R.layout.splashscreen);
         initPubnub();
         initGoogleApi();
-        Button deezerConnect = (Button) findViewById(R.id.deezer_connect);
+        RelativeLayout deezerConnect = (RelativeLayout) findViewById(R.id.deezer_connect);
         mListView = (ListView) findViewById(R.id.playlist_listview);
         if (deezerConnect != null) {
             deezerConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    connectToDeezer((Button) v);
+                    connectToDeezer((RelativeLayout) v);
                 }
             });
         }
     }
 
-    private void connectToDeezer(final Button connectButton) {
+    private void connectToDeezer(final RelativeLayout connectButton) {
         final LinearLayout container = (LinearLayout) findViewById(R.id.container);
         mPlaylistList = new ArrayList<>();
         ServicesAuthentication.DeezerConnection mCallback = new ServicesAuthentication.DeezerConnection() {
@@ -292,7 +293,9 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.playlistTitle.setText(getItem(position).getTitle());
+            viewHolder.playlistTitle.setSelected(true);
             viewHolder.creator.setText(getItem(position).getCreator().getName());
+            viewHolder.creator.setSelected(true);
             Picasso.with(mContext).load(getItem(position).getSmallImageUrl()).fit().centerCrop().into(viewHolder.cover);
             return convertView;
         }
