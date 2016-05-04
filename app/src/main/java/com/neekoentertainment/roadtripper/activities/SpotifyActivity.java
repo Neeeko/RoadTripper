@@ -1,6 +1,7 @@
 package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -119,19 +120,16 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
     }
 
     protected void initializeButtons() {
-        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
         ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
         ImageButton prevButton = (ImageButton) findViewById(R.id.prevButton);
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
 
-        if (playButton != null)
-            playButton.setEnabled(false);
+        if (playPauseButton != null)
+            playPauseButton.setEnabled(false);
         if (prevButton != null)
             prevButton.setEnabled(false);
         if (nextButton != null)
             nextButton.setEnabled(false);
-        if (pauseButton != null)
-            pauseButton.setEnabled(false);
 
         mIsPaused = false;
     }
@@ -180,33 +178,39 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
     }
 
     public void activateButtons() {
-        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
         ImageButton nextButton = (ImageButton) findViewById(R.id.nextButton);
         ImageButton prevButton = (ImageButton) findViewById(R.id.prevButton);
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
 
-        if (playButton != null)
-            playButton.setEnabled(true);
+        if (playPauseButton != null)
+            playPauseButton.setEnabled(true);
         if (prevButton != null)
             prevButton.setEnabled(true);
         if (nextButton != null)
             nextButton.setEnabled(true);
-        if (pauseButton != null)
-            pauseButton.setEnabled(true);
     }
 
-    public void onPlayClicked(View view) {
-        if (!mIsPaused) {
-            String spotifyURI = SharedPreferencesUtils.SPOTIFY_URI;
-            mPlayer.play(spotifyURI);
-        } else {
-            mPlayer.resume();
+    public void switchPausePlayButton() {
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+
+        if (playPauseButton != null) {
+            if (!mIsPaused) {
+                playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+            } else {
+                playPauseButton.setBackgroundResource(R.drawable.playbutton);
+            }
         }
     }
 
-    public void onPauseClicked(View view) {
-        mIsPaused = true;
-        mPlayer.pause();
+    public void onPlayPauseClicked(View view) {
+        if (!mIsPaused) {
+            String spotifyURI = SharedPreferencesUtils.SPOTIFY_URI;
+            mPlayer.play(spotifyURI);
+            switchPausePlayButton();
+        } else {
+            switchPausePlayButton();
+            mPlayer.resume();
+        }
     }
 
     public void onNextClicked(View view) {

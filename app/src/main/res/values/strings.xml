@@ -17,4 +17,5 @@
     <string name="title_activity_parameters">ParametersActivity</string>
     <string name="parameters_activity_spotify">Spotify Playlist URI</string>
     <string name="button_save">Save</string>
+    <string name="play_button_desc">Play button</string>
 </resources>
