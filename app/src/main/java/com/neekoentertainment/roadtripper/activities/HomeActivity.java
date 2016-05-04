@@ -2,21 +2,15 @@ package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -53,7 +47,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private static final int FASTEST_INTERVAL = 5000;
     private static final String TAG = "HomeActivity";
 
-    private ActionBarDrawerToggle mDrawerToggle;
     private Marker myLastPos;
     private Marker myFriendLastPos;
     private boolean isFirstLaunch = true;
@@ -100,12 +93,14 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                     dialog.dismiss();
                                 }
                             })
+                            .setTitle("Follow a friend!")
                             .create()
                             .show();
                 }
             });
         }
-        setNavigationDrawerAndToolbars();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         setMap();
         if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
             mUsername = getIntent().getStringExtra(getString(R.string.username));
@@ -134,65 +129,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         location.setLongitude(lng);
         location.setTime(new Date().getTime());
         return location;
-    }
-
-    private void setNavigationDrawerAndToolbars() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(MenuItem item) {
-                    if (item.getTitle().toString().equals(getString(R.string.app_name))) {
-                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(intent);
-                    } else if (item.getTitle().toString().equals(getString(R.string.spotify))) {
-                        Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
-                        startActivity(intent);
-                    } else if (item.getTitle().toString().equals(getString(R.string.parameters))) {
-                        Intent intent = new Intent(getApplicationContext(), ParametersActivity.class);
-                        startActivity(intent);
-                    }
-                    return true;
-                }
-            });
-        }
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-
-        if (mDrawerLayout != null) {
-            mDrawerLayout.addDrawerListener(mDrawerToggle);
-        }
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
-        mDrawerToggle.syncState();
-    }
-
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setMap() {

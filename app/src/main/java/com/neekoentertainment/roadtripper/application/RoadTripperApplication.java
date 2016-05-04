@@ -2,6 +2,7 @@ package com.neekoentertainment.roadtripper.application;
 
 import android.app.Application;
 
+import com.deezer.sdk.network.connect.DeezerConnect;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.neekoentertainment.roadtripper.utils.MessagingManager;
 
@@ -12,7 +13,7 @@ import com.neekoentertainment.roadtripper.utils.MessagingManager;
 public class RoadTripperApplication extends Application {
     private GoogleApiClient mGoogleApiClient;
     private MessagingManager mMessagingManager;
-    private String mUsername;
+    private DeezerConnect mDeezerConnect;
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
@@ -30,11 +31,11 @@ public class RoadTripperApplication extends Application {
         this.mMessagingManager = mMessagingManager;
     }
 
-    public String getUsername() {
-        return mUsername;
+    public DeezerConnect getDeezerConnect() {
+        return mDeezerConnect;
     }
 
-    public void setUsername(String mUsername) {
-        this.mUsername = mUsername;
+    public void setDeezerConnect(DeezerConnect mDeezerConnect) {
+        this.mDeezerConnect = mDeezerConnect;
     }
 }
