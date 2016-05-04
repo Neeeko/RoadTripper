@@ -26,136 +26,128 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_white_24dp"
+        android:layout_above="@+id/playerLayout"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_margin="10dp"
+        android:src="@drawable/ic_add_white_24dp"
         app:elevation="6dp"
         app:fabSize="normal"
-        app:rippleColor="@color/colorPrimary"
-        android:layout_above="@+id/playerLayout"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        app:rippleColor="@color/colorPrimary" />
 
     <RelativeLayout
+        android:id="@+id/playerLayout"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:background="@color/darkGrey"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/playerLayout">
+        android:background="@color/darkGrey"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/albumImg"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:background="@drawable/music_icon"
-            android:id="@+id/albumImg"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:contentDescription="@string/album_image"
-            />
+            android:background="@drawable/music_icon"
+            android:contentDescription="@string/album_image" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_toLeftOf="@+id/prevButton"
-            android:layout_toStartOf="@+id/prevButton"
-            android:layout_toRightOf="@+id/albumImg"
-            android:layout_toEndOf="@+id/albumImg"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
-            >
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/albumImg"
+            android:layout_toLeftOf="@+id/prevButton"
+            android:layout_toRightOf="@+id/albumImg"
+            android:layout_toStartOf="@+id/prevButton"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/titleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
                 android:text="@string/music_title"
                 android:textColor="@android:color/white"
                 android:textSize="13sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="5dp"
-                android:id="@+id/titleText"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit ="marquee_forever"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:scrollHorizontally="true"
-                />
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/artistText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/artist_title"
-                android:textColor="@color/lightGrey"
-                android:textSize="12sp"
-                android:id="@+id/artistText"
-                android:singleLine="true"
                 android:ellipsize="marquee"
-                android:marqueeRepeatLimit ="marquee_forever"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit ="marquee_forever"
                 android:scrollHorizontally="true"
-                />
-
+                android:singleLine="true"
+                android:text="@string/artist_title"
+                android:textColor="@color/lightGrey"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <ImageButton
+            android:id="@+id/prevButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/arrowprevious"
-            android:id="@+id/prevButton"
             android:layout_centerInParent="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginStart="10dp"
             android:layout_toLeftOf="@+id/playPauseButton"
             android:layout_toStartOf="@+id/playPauseButton"
-            android:gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
+            android:background="@drawable/arrowprevious"
             android:contentDescription="@string/previous_song_button"
-            android:onClick="onPrevClicked"
-            />
+            android:gravity="center"
+            android:onClick="onPrevClicked" />
 
         <ImageButton
+            android:id="@+id/playPauseButton"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:background="@drawable/playbutton"
-            android:id="@+id/playPauseButton"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_toLeftOf="@+id/nextButton"
             android:layout_toStartOf="@+id/nextButton"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
+            android:background="@drawable/playbutton"
             android:contentDescription="@string/play_pause_song_button"
-            android:onClick="onPlayPauseClicked"
-            />
+            android:gravity="center_vertical"
+            android:onClick="onPlayPauseClicked" />
 
         <ImageButton
+            android:id="@+id/nextButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/arrownext"
-            android:id="@+id/nextButton"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
-            android:gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/arrownext"
             android:contentDescription="@string/next_song_button"
-            android:onClick="onNextClicked"
-            />
+            android:gravity="center_vertical"
+            android:onClick="onNextClicked" />
 
     </RelativeLayout>
 
