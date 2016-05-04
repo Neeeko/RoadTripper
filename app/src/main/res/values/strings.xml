@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">RoadTripper</string>
-    <string name="spotify_client_id">254be1f74d704c5286dab2feca48da7a</string>
-    <string name="spotify_redirect_uri">roadtripper://callback</string>
     <string name="drawer_open">Open the navigation drawer to access the menu</string>
     <string name="drawer_close">Close the navigation drawer to return to the app</string>
-    <string name="spotify">Spotify</string>
     <string name="parameters">Parameters</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
@@ -13,9 +10,11 @@
     <string name="empty_user_name">Your name cannot be empty.</string>
     <string name="username">username</string>
     <string name="enter_name">Enter your name</string>
+    <string name="enter_friend_name">Enter your friend\'s name</string>
     <string name="confirm">Confirm</string>
     <string name="title_activity_parameters">ParametersActivity</string>
     <string name="parameters_activity_spotify">Spotify Playlist URI</string>
     <string name="button_save">Save</string>
     <string name="play_button_desc">Play button</string>
+    <string name="connect_deezer">Connect to Deezer</string>
 </resources>

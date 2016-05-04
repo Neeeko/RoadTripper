@@ -61,7 +61,9 @@ public class MessagingManager {
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
-        Log.d(TAG, STARTING_BROADCAST + channelName);
-        mPubnub.publish(channelName, message, publishCallback);
+        if (channelName != null) {
+            Log.d(TAG, STARTING_BROADCAST + channelName);
+            mPubnub.publish(channelName, message, publishCallback);
+        }
     }
 }

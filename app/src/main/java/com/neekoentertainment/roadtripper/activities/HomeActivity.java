@@ -2,21 +2,15 @@ package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,13 +41,12 @@ import java.util.Date;
 /**
  * Created by Nicolas on 4/3/2016.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements LocationListener {
 
     private static final int INTERVAL = 10000;
     private static final int FASTEST_INTERVAL = 5000;
     private static final String TAG = "HomeActivity";
 
-    private ActionBarDrawerToggle mDrawerToggle;
     private Marker myLastPos;
     private Marker myFriendLastPos;
     private boolean isFirstLaunch = true;
@@ -62,6 +55,9 @@ public class HomeActivity extends AppCompatActivity {
     private MessagingManager mMessagingManager;
     private GoogleMap mGoogleMap;
     private Boolean mCameraLock = true;
+    private BroadcastAsyncTask mBroadastAsyncTask;
+    private SubscribeAsyncTask mSubscribeAsyncTask;
+    private SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,20 +93,34 @@ public class HomeActivity extends AppCompatActivity {
                                     dialog.dismiss();
                                 }
                             })
+                            .setTitle("Follow a friend!")
                             .create()
                             .show();
                 }
             });
         }
-        setNavigationDrawerAndToolbars();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         setMap();
         if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
             mUsername = getIntent().getStringExtra(getString(R.string.username));
         }
     }
 
+    @Override
+    protected void onPause() {
+        if (mSubscribeAsyncTask != null && mSubscribeAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mSubscribeAsyncTask.cancel(true);
+        }
+        if (mBroadastAsyncTask != null && mBroadastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mBroadastAsyncTask.cancel(true);
+        }
+        super.onPause();
+    }
+
     private void subscribeToFriend(String name) {
-        new SubscribeAsyncTask().execute(name);
+        mSubscribeAsyncTask = new SubscribeAsyncTask();
+        mSubscribeAsyncTask.execute(name);
     }
 
     private Location createLocation(double lat, double lng, String name) {
@@ -121,86 +131,16 @@ public class HomeActivity extends AppCompatActivity {
         return location;
     }
 
-    private void setNavigationDrawerAndToolbars() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(MenuItem item) {
-
-                    if (item.getTitle().toString().equals(getString(R.string.spotify))) {
-                        Intent intent = new Intent(getApplicationContext(), SpotifyActivity.class);
-                        startActivity(intent);
-                    } else if (item.getTitle().toString().equals(getString(R.string.parameters))) {
-                        Intent intent = new Intent(getApplicationContext(), ParametersActivity.class);
-                        startActivity(intent);
-                    }
-                    return true;
-                }
-            });
-        }
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-
-        if (mDrawerLayout != null) {
-            mDrawerLayout.addDrawerListener(mDrawerToggle);
-        }
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mGoogleApiClient.disconnect();
-    }
-
-
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void setMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(new com.google.android.gms.maps.OnMapReadyCallback() {
+        mMapFragment.getMapAsync(new com.google.android.gms.maps.OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mGoogleMap = googleMap;
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 LocationRequest locationRequest = getLocationRequest();
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest,
-                        new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                new BroadcastAsyncTask().execute(location);
-                            }
-                        });
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, HomeActivity.this);
             }
         });
     }
@@ -247,6 +187,12 @@ public class HomeActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mBroadastAsyncTask = new BroadcastAsyncTask();
+        mBroadastAsyncTask.execute(location);
     }
 
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Void> {

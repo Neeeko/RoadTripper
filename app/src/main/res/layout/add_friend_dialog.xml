@@ -2,16 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:descendantFocusability="beforeDescendants"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/friendName"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="16dp"
-        android:inputType="text"
-        android:maxLines="1" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/friendName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_friend_name"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColorHint="@color/colorPrimary" />
+
+    </android.support.design.widget.TextInputLayout>
+
 </LinearLayout>
