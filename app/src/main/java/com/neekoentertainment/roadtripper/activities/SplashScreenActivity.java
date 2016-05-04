@@ -50,6 +50,8 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     public static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 1;
 
     public static final String DEEZER_PLAYLISTS_URL = "user/me/playlists";
+    public static final String INTENT_EXTRA_USERNAME = "intent_extra_username";
+    public static final String INTENT_EXTRA_PLAYLIST_ID = "intent_extra_playlist_id";
 
     private static final String TAG = "SplashScreenActivity";
 
@@ -57,6 +59,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     private DeezerConnect mDeezerConnect;
     private ArrayList<Playlist> mPlaylistList;
     private ListView mListView;
+    private long mIdPlaylist = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +99,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Log.d("Test", playlistsAdapter.getItem(position).getTitle());
+                                mIdPlaylist = playlistsAdapter.getItem(position).getId();
                             }
                         });
                     }
@@ -235,7 +238,10 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                     if (editText != null) {
                         if (!editText.getText().toString().isEmpty() && !editText.getText().toString().trim().equals("")) {
                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                            intent.putExtra(getString(R.string.username), editText.getText().toString());
+                            intent.putExtra(INTENT_EXTRA_USERNAME, editText.getText().toString());
+                            if (mIdPlaylist != -1) {
+                                intent.putExtra(INTENT_EXTRA_PLAYLIST_ID, mIdPlaylist);
+                            }
                             startActivity(intent);
                             finish();
                         } else {

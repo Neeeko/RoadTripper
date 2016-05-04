@@ -3,7 +3,6 @@ package com.neekoentertainment.roadtripper.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -61,9 +60,11 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private MessagingManager mMessagingManager;
     private GoogleMap mGoogleMap;
     private Boolean mCameraLock = true;
-    private BroadcastAsyncTask mBroadastAsyncTask;
+
+    private BroadcastAsyncTask mBroadcastAsyncTask;
     private SubscribeAsyncTask mSubscribeAsyncTask;
-    private SupportMapFragment mMapFragment;
+
+    private long mPlaylistId;
     private PlaylistPlayer mPlaylistPlayer;
 
     @Override
@@ -112,8 +113,12 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         initializeUiElements();
 
         setMap();
-        if (getIntent() != null && getIntent().getStringExtra(getString(R.string.username)) != null) {
-            mUsername = getIntent().getStringExtra(getString(R.string.username));
+        if (getIntent() != null) {
+            if (getIntent().getStringExtra(SplashScreenActivity.INTENT_EXTRA_USERNAME) != null) {
+                mUsername = getIntent().getStringExtra(SplashScreenActivity.INTENT_EXTRA_USERNAME);
+            } else if (getIntent().getLongExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLIST_ID, -1) != -1) {
+                mPlaylistId = getIntent().getLongExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLIST_ID, -1);
+            }
         }
     }
 
@@ -157,8 +162,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         if (mSubscribeAsyncTask != null && mSubscribeAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
             mSubscribeAsyncTask.cancel(true);
         }
-        if (mBroadastAsyncTask != null && mBroadastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mBroadastAsyncTask.cancel(true);
+
+        if (mBroadcastAsyncTask != null && mBroadcastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mBroadcastAsyncTask.cancel(true);
         }
         super.onPause();
     }
@@ -177,7 +183,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void setMap() {
-        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mMapFragment.getMapAsync(new com.google.android.gms.maps.OnMapReadyCallback() {
             @Override
@@ -236,8 +242,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
-        mBroadastAsyncTask = new BroadcastAsyncTask();
-        mBroadastAsyncTask.execute(location);
+
+        mBroadcastAsyncTask = new BroadcastAsyncTask();
+        mBroadcastAsyncTask.execute(location);
     }
 
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Void> {
