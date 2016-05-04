@@ -130,7 +130,7 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
         ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
 
         if (playPauseButton != null) {
-            if (!mIsPaused) {
+            if (playPauseButton.getDrawable()) {
                 playPauseButton.setBackgroundResource(R.drawable.pausebutton);
             } else {
                 playPauseButton.setBackgroundResource(R.drawable.playbutton);
@@ -144,14 +144,14 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             mPlayer.play(spotifyURI);
             switchPausePlayButton();
             mIsStopped = false;
-        }
-        else if (mIsPaused) {
-            switchPausePlayButton();
-            mPlayer.resume();
-        }
-        else if (!mIsPaused) {
+        } else if (!mIsPaused) {
             switchPausePlayButton();
             mPlayer.pause();
+            mIsPaused = true;
+        } else if (mIsPaused) {
+            switchPausePlayButton();
+            mPlayer.resume();
+            mIsPaused = false;
         }
     }
 
