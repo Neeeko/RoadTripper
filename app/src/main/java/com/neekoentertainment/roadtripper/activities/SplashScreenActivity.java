@@ -118,7 +118,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                         if (!editText.getText().toString().isEmpty() && !editText.getText().toString().trim().equals("")) {
                             ((RoadTripperApplication) getApplicationContext()).setUsername(editText.getText().toString());
                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                            //intent.putExtra(getString(R.string.username), editText.getText().toString());
+                            intent.putExtra(getString(R.string.username), editText.getText().toString());
                             startActivity(intent);
                             finish();
                         } else {

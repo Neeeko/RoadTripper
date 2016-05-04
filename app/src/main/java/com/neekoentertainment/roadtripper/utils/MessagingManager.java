@@ -52,10 +52,6 @@ public class MessagingManager {
         }
     }
 
-    public void unsubscribe(String channelName) {
-        mPubnub.unsubscribe(channelName);
-    }
-
     public void broadcastLocation(String channelName, double latitude, double longitude) {
         JSONObject message = new JSONObject();
         try {

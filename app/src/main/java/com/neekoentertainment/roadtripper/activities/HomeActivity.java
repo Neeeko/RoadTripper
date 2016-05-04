@@ -120,7 +120,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         if (mBroadastAsyncTask != null && mBroadastAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
             mBroadastAsyncTask.cancel(true);
         }
-        mMessagingManager.unsubscribe(mUsername);
         super.onPause();
     }
 

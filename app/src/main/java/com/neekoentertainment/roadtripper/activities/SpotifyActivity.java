@@ -209,12 +209,18 @@ public class SpotifyActivity extends AppCompatActivity implements PlayerNotifica
             mPlayer.play(spotifyURI);
             switchPausePlayButton();
             mIsStopped = false;
-        } else if (mIsPaused) {
-            switchPausePlayButton();
-            mPlayer.resume();
+            Toast.makeText(SpotifyActivity.this, "mIsStopped = " + mIsStopped + "   mIsPaused = " + mIsPaused, Toast.LENGTH_SHORT).show();
+
         } else if (!mIsPaused) {
             switchPausePlayButton();
             mPlayer.pause();
+            mIsPaused = true;
+            Toast.makeText(SpotifyActivity.this, "mIsStopped = " + mIsStopped + "   mIsPaused = " + mIsPaused, Toast.LENGTH_SHORT).show();
+        } else if (mIsPaused) {
+            switchPausePlayButton();
+            mPlayer.resume();
+            mIsPaused = false;
+            Toast.makeText(SpotifyActivity.this, "mIsStopped = " + mIsStopped + "   mIsPaused = " + mIsPaused, Toast.LENGTH_SHORT).show();
         }
     }
 
