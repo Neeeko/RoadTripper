@@ -3,6 +3,8 @@ package com.neekoentertainment.roadtripper.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
+import android.media.Image;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,13 +14,30 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deezer.sdk.model.PlayableEntity;
+import com.deezer.sdk.model.Track;
+import com.deezer.sdk.network.request.DeezerRequest;
+import com.deezer.sdk.network.request.DeezerRequestFactory;
+import com.deezer.sdk.network.request.event.DeezerError;
+import com.deezer.sdk.network.request.event.JsonRequestListener;
+import com.deezer.sdk.network.request.event.RequestListener;
+import com.deezer.sdk.player.Player;
 import com.deezer.sdk.player.PlaylistPlayer;
+import com.deezer.sdk.player.event.BufferState;
+import com.deezer.sdk.player.event.OnBufferStateChangeListener;
+import com.deezer.sdk.player.event.PlayerState;
+import com.deezer.sdk.player.event.PlayerWrapperListener;
+import com.deezer.sdk.player.exception.TooManyPlayersExceptions;
+import com.deezer.sdk.player.networkcheck.WifiAndMobileNetworkStateChecker;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -36,16 +55,18 @@ import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 import com.neekoentertainment.roadtripper.utils.MessagingManager;
 import com.pubnub.api.Callback;
 import com.pubnub.api.PubnubError;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Nicolas on 4/3/2016.
  */
-public class HomeActivity extends AppCompatActivity implements LocationListener {
+public class HomeActivity extends AppCompatActivity implements LocationListener, PlayerWrapperListener {
 
     private static final int INTERVAL = 10000;
     private static final int FASTEST_INTERVAL = 5000;
@@ -55,7 +76,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private Marker myFriendLastPos;
     private boolean isFirstLaunch = true;
     private String mUsername;
-    private Long mPlaylistID;
     private GoogleApiClient mGoogleApiClient;
     private MessagingManager mMessagingManager;
     private GoogleMap mGoogleMap;
@@ -66,6 +86,10 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     private long mPlaylistId;
     private PlaylistPlayer mPlaylistPlayer;
+
+    private String mFirstSongTitle;
+    private String mFirstSongArtistName;
+    private String mFirstSongAlbumUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,16 +134,16 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        initializeUiElements();
-
         setMap();
         if (getIntent() != null) {
             if (getIntent().getStringExtra(SplashScreenActivity.INTENT_EXTRA_USERNAME) != null) {
                 mUsername = getIntent().getStringExtra(SplashScreenActivity.INTENT_EXTRA_USERNAME);
-            } else if (getIntent().getLongExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLIST_ID, -1) != -1) {
-                mPlaylistId = getIntent().getLongExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLIST_ID, -1);
             }
+            mPlaylistId = getIntent().getLongExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLIST_ID, -1);
         }
+
+        initializeUiElements();
+
     }
 
     protected void initializeUiElements() {
@@ -129,32 +153,136 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         if (titleTxt != null)
             titleTxt.setSelected(true);
         if (artistTxt != null)
-        artistTxt.setSelected(true);
+            artistTxt.setSelected(true);
 
-        if (mPlaylistID != null)
-            mPlaylistPlayer.playPlaylist(mPlaylistID);
 
+        if (mPlaylistId != -1) {
+            try {
+                mPlaylistPlayer = new PlaylistPlayer(getApplication(),
+                        ((RoadTripperApplication) getApplicationContext()).getDeezerConnect(),
+                        new WifiAndMobileNetworkStateChecker());
+                mPlaylistPlayer.addPlayerListener(this);
+
+                DeezerRequest playlistTracksRequest = DeezerRequestFactory.requestPlaylistTracks(mPlaylistId);
+                ((RoadTripperApplication) getApplicationContext()).getDeezerConnect().requestAsync(playlistTracksRequest, new JsonRequestListener() {
+                    @Override
+                    public void onResult(Object result, Object requestId) {
+                        List<Track> trackList = (List<Track>) result;
+
+                        if (result == null || ((List<Track>) result).size() == 0) {
+                            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.playerLayout);
+                            FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.fab);
+
+                            if (addFab != null) {
+                                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) addFab.getLayoutParams();
+
+                                params.setMargins(0, 0, 20, 20);
+
+                                params.addRule(RelativeLayout.ABOVE, 0);
+                                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+                                addFab.setLayoutParams(params);
+                            }
+
+                            if (playerLayout != null)
+                                playerLayout.setVisibility(View.GONE);
+
+                            Toast.makeText(HomeActivity.this, "The playlist is empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mFirstSongTitle = trackList.get(0).getTitle();
+                            mFirstSongArtistName = trackList.get(0).getArtist().getName();
+                            mFirstSongAlbumUrl = trackList.get(0).getAlbum().getCoverUrl();
+
+                            TextView titleTxt = (TextView) findViewById(R.id.titleText);
+                            TextView artistTxt = (TextView) findViewById(R.id.artistText);
+
+                            if (titleTxt != null)
+                                titleTxt.setText(trackList.get(0).getTitle());
+                            if (artistTxt != null)
+                                artistTxt.setText(trackList.get(0).getArtist().getName());
+
+                            ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+                            if (albumImg != null)
+                                Picasso.with(getApplicationContext()).load(trackList.get(0).getAlbum().getCoverUrl()).fit().centerCrop().into(albumImg);
+                        }
+                    }
+
+                    @Override
+                    public void onUnparsedResult(String s, Object o) {
+
+                    }
+
+                    @Override
+                    public void onException(Exception e, Object o) {
+                        e.printStackTrace();
+                        Log.e(TAG, e.getMessage());
+                    }
+                });
+
+            } catch (TooManyPlayersExceptions | DeezerError e) {
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
+        } else {
+            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.playerLayout);
+            FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.fab);
+
+            if (addFab != null) {
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) addFab.getLayoutParams();
+
+                params.setMargins(0, 0, 20, 20);
+
+                params.addRule(RelativeLayout.ABOVE, 0);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+                addFab.setLayoutParams(params);
+            }
+
+            if (playerLayout != null)
+                playerLayout.setVisibility(View.GONE);
+        }
     }
-
 
     public void onPrevClicked(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
 
-
+        if (mPlaylistPlayer != null) {
+            mPlaylistPlayer.skipToPreviousTrack();
+        }
     }
 
     public void onPlayPauseClicked(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
 
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-        if (playPauseButton != null)
-            playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+        if (mPlaylistPlayer != null && mPlaylistPlayer.getPlayerState() == PlayerState.PLAYING)
+        {
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            if (playPauseButton != null)
+                playPauseButton.setBackgroundResource(R.drawable.playbutton);
+            mPlaylistPlayer.pause();
+        } else if (mPlaylistPlayer != null && mPlaylistPlayer.getPlayerState() == PlayerState.PAUSED) {
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            if (playPauseButton != null)
+                playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+            mPlaylistPlayer.play();
+        } else if (mPlaylistPlayer != null && (mPlaylistPlayer.getPlayerState() == PlayerState.STARTED ||
+                mPlaylistPlayer.getPlayerState() == PlayerState.STOPPED ||
+                mPlaylistPlayer.getPlayerState() == PlayerState.PLAYBACK_COMPLETED)) {
+            mPlaylistPlayer.playPlaylist(mPlaylistId);
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            if (playPauseButton != null)
+                playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+        }
     }
 
     public void onNextClicked(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.click_animation));
 
-
+        if (mPlaylistPlayer != null) {
+            mPlaylistPlayer.skipToNextTrack();
+        }
     }
 
     @Override
@@ -245,6 +373,58 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
         mBroadcastAsyncTask = new BroadcastAsyncTask();
         mBroadcastAsyncTask.execute(location);
+    }
+
+    @Override
+    public void onAllTracksEnded() {
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        if (playPauseButton != null)
+            playPauseButton.setBackgroundResource(R.drawable.playbutton);
+
+        TextView titleTxt = (TextView) findViewById(R.id.titleText);
+        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+
+        if (titleTxt != null)
+            titleTxt.setText(mFirstSongTitle);
+        if (artistTxt != null)
+            artistTxt.setText(mFirstSongArtistName);
+
+        ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+        if (albumImg != null)
+            Picasso.with(getApplicationContext()).load(mFirstSongAlbumUrl).fit().centerCrop().into(albumImg);
+
+    }
+
+    @Override
+    public void onPlayTrack(PlayableEntity playableEntity) {
+
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        if (playPauseButton != null)
+            playPauseButton.setBackgroundResource(R.drawable.pausebutton);
+
+        TextView titleTxt = (TextView) findViewById(R.id.titleText);
+        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+
+        if (titleTxt != null)
+            titleTxt.setText(mPlaylistPlayer.getCurrentTrack().getTitle());
+        if (artistTxt != null)
+            artistTxt.setText(mPlaylistPlayer.getCurrentTrack().getArtist().getName());
+
+        ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+        if (albumImg != null)
+            Picasso.with(getApplicationContext()).load(mPlaylistPlayer.getCurrentTrack().getAlbum().getCoverUrl()).fit().centerCrop().into(albumImg);
+    }
+
+    @Override
+    public void onTrackEnded(PlayableEntity playableEntity) {
+
+
+
+    }
+
+    @Override
+    public void onRequestException(Exception e, Object o) {
+
     }
 
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Void> {
