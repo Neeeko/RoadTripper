@@ -26,7 +26,7 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/playerLayout"
+        android:layout_above="@+id/player_layout"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
@@ -36,7 +36,7 @@
         app:rippleColor="@color/colorPrimary" />
 
     <RelativeLayout
-        android:id="@+id/playerLayout"
+        android:id="@+id/player_layout"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_alignParentBottom="true"
@@ -47,7 +47,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/albumImg"
+            android:id="@+id/album_img"
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:layout_alignParentLeft="true"
@@ -63,15 +63,15 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginStart="10dp"
-            android:layout_toEndOf="@+id/albumImg"
-            android:layout_toLeftOf="@+id/prevButton"
-            android:layout_toRightOf="@+id/albumImg"
-            android:layout_toStartOf="@+id/prevButton"
+            android:layout_toEndOf="@+id/album_img"
+            android:layout_toLeftOf="@+id/prev_button"
+            android:layout_toRightOf="@+id/album_img"
+            android:layout_toStartOf="@+id/prev_button"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/titleText"
+                android:id="@+id/title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -86,7 +86,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/artistText"
+                android:id="@+id/artist_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
@@ -100,7 +100,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/prevButton"
+            android:id="@+id/prev_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerInParent="true"
@@ -108,30 +108,30 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="5dp"
             android:layout_marginStart="10dp"
-            android:layout_toLeftOf="@+id/playPauseButton"
-            android:layout_toStartOf="@+id/playPauseButton"
+            android:layout_toLeftOf="@+id/play_pause_button"
+            android:layout_toStartOf="@+id/play_pause_button"
             android:background="@drawable/arrowprevious"
             android:contentDescription="@string/previous_song_button"
             android:gravity="center"
             android:onClick="onPrevClicked" />
 
         <ImageButton
-            android:id="@+id/playPauseButton"
+            android:id="@+id/play_pause_button"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@+id/nextButton"
-            android:layout_toStartOf="@+id/nextButton"
+            android:layout_toLeftOf="@+id/next_button"
+            android:layout_toStartOf="@+id/next_button"
             android:background="@drawable/playbutton"
             android:contentDescription="@string/play_pause_song_button"
             android:gravity="center_vertical"
             android:onClick="onPlayPauseClicked" />
 
         <ImageButton
-            android:id="@+id/nextButton"
+            android:id="@+id/next_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"

@@ -10,7 +10,6 @@
     <string name="empty_user_name">Your name cannot be empty.</string>
     <string name="username">username</string>
     <string name="enter_name">Enter your name</string>
-    <string name="enter_friend_name">Enter your friend\'s name</string>
     <string name="confirm">Confirm</string>
     <string name="title_activity_parameters">ParametersActivity</string>
     <string name="parameters_activity_spotify">Spotify Playlist URI</string>
@@ -21,4 +20,7 @@
     <string name="next_song_button">Next song</string>
     <string name="play_pause_song_button">Play/pause song</string>
     <string name="album_image">Album image</string>
+    <string name="playlist_picker_activity_title">Select a playlist</string>
+    <string name="dialog_title">Follow a friend!</string>
+    <string name="empty_playlist">The playlist is empty</string>
 </resources>

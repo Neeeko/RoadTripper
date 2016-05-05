@@ -1,13 +1,18 @@
 package com.neekoentertainment.roadtripper.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.deezer.sdk.model.Playlist;
@@ -25,14 +30,42 @@ public class PlaylistPickerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist_picker_activity);
-        /*final PlaylistsAdapter playlistsAdapter = new PlaylistsAdapter(getApplicationContext(), mPlaylistList);
-        mListView.setAdapter(playlistsAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //mIdPlaylist = playlistsAdapter.getItem(position).getId();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setTitle(getString(R.string.playlist_picker_activity_title));
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
             }
-        });*/
+        }
+        if (getIntent() != null && getIntent().getParcelableArrayListExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLISTS_LIST) != null) {
+            final ArrayList<Playlist> playlistList = getIntent().getParcelableArrayListExtra(SplashScreenActivity.INTENT_EXTRA_PLAYLISTS_LIST);
+            final ListView listView = (ListView) findViewById(R.id.playlist_listview);
+            final PlaylistsAdapter playlistsAdapter = new PlaylistsAdapter(getApplicationContext(), playlistList);
+            if (listView != null) {
+                listView.setAdapter(playlistsAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra(SplashScreenActivity.RETURN_INTENT_EXTRA_SELECTED_PLAYLIST, playlistList.get(position));
+                        setResult(AppCompatActivity.RESULT_OK, returnIntent);
+                        finish();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public class PlaylistsAdapter extends BaseAdapter {

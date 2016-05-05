@@ -12,12 +12,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.deezer.sdk.model.PaginatedList;
 import com.deezer.sdk.model.Playlist;
@@ -32,6 +36,7 @@ import com.neekoentertainment.roadtripper.R;
 import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 import com.neekoentertainment.roadtripper.utils.MessagingManager;
 import com.neekoentertainment.roadtripper.utils.ServicesAuthentication;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 
@@ -46,13 +51,18 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     public static final String INTENT_EXTRA_USERNAME = "intent_extra_username";
     public static final String INTENT_EXTRA_PLAYLIST_ID = "intent_extra_playlist_id";
     public static final String INTENT_EXTRA_PLAYLISTS_LIST = "intent_extra_playlists_list";
+    public static final String RETURN_INTENT_EXTRA_SELECTED_PLAYLIST = "return_intent_extra_selected_playlist";
 
+    private static final int GET_PLAYLIST = 1;
     private static final String TAG = "SplashScreenActivity";
 
     private GoogleApiClient mGoogleApiClient;
     private DeezerConnect mDeezerConnect;
     private ArrayList<Playlist> mPlaylistList;
     private ListView mListView;
+    private RelativeLayout mConnectButton;
+    private ProgressBar mProgressBar;
+    private RelativeLayout mSelectedPlaylistHolder;
     private long mIdPlaylist = -1;
 
     @Override
@@ -63,17 +73,20 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
         initGoogleApi();
         RelativeLayout deezerConnect = (RelativeLayout) findViewById(R.id.deezer_connect);
         mListView = (ListView) findViewById(R.id.playlist_listview);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress);
+        mSelectedPlaylistHolder = (RelativeLayout) findViewById(R.id.selected_playlist_holder);
         if (deezerConnect != null) {
             deezerConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    connectToDeezer((RelativeLayout) v);
+                    mConnectButton = (RelativeLayout) v;
+                    connectToDeezer();
                 }
             });
         }
     }
 
-    private void connectToDeezer(final RelativeLayout connectButton) {
+    private void connectToDeezer() {
         final LinearLayout container = (LinearLayout) findViewById(R.id.container);
         final Context context = this;
         mPlaylistList = new ArrayList<>();
@@ -82,15 +95,16 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
             public void onDeezerConnected(DeezerConnect deezerConnect) {
                 mDeezerConnect = deezerConnect;
                 ((RoadTripperApplication) getApplicationContext()).setDeezerConnect(mDeezerConnect);
-                if (connectButton != null) {
-                    connectButton.setVisibility(View.GONE);
-                    mListView.setVisibility(View.VISIBLE);
+                if (mConnectButton != null) {
+                    mConnectButton.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.VISIBLE);
                 }
                 getCurrentUserPlaylists(DEEZER_PLAYLISTS_URL, new OnDataRetrieved() {
                     @Override
                     public void onDataRetrieved() {
                         Intent intent = new Intent(context, PlaylistPickerActivity.class);
                         intent.putParcelableArrayListExtra(INTENT_EXTRA_PLAYLISTS_LIST, mPlaylistList);
+                        startActivityForResult(intent, GET_PLAYLIST);
                     }
                 });
             }
@@ -101,13 +115,13 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
 
             @Override
             public void onDeezerFailed(String e) {
-                if (connectButton != null) {
+                if (mConnectButton != null) {
                     mListView.setVisibility(View.GONE);
-                    connectButton.setVisibility(View.VISIBLE);
-                    connectButton.setOnClickListener(new View.OnClickListener() {
+                    mConnectButton.setVisibility(View.VISIBLE);
+                    mConnectButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            connectToDeezer(connectButton);
+                            connectToDeezer();
                         }
                     });
                 }
@@ -117,6 +131,44 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
             }
         };
         ServicesAuthentication.getDeezerConnect(this, mCallback);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GET_PLAYLIST) {
+            mProgressBar.setVisibility(View.GONE);
+            if (resultCode == AppCompatActivity.RESULT_OK) {
+                Playlist selectedPlaylist = data.getParcelableExtra(RETURN_INTENT_EXTRA_SELECTED_PLAYLIST);
+                if (mSelectedPlaylistHolder != null) {
+                    final Context context = this;
+                    mIdPlaylist = selectedPlaylist.getId();
+                    LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View selectedPlaylistView = inflater.inflate(R.layout.playlist_view, mSelectedPlaylistHolder, false);
+                    ImageView coverImage = (ImageView) selectedPlaylistView.findViewById(R.id.playlist_cover);
+                    TextView creator = (TextView) selectedPlaylistView.findViewById(R.id.playlist_creator);
+                    creator.setSelected(true);
+                    TextView title = (TextView) selectedPlaylistView.findViewById(R.id.playlist_title);
+                    title.setSelected(true);
+                    creator.setText(selectedPlaylist.getCreator().getName());
+                    title.setText(selectedPlaylist.getTitle());
+                    Picasso.with(this).load(selectedPlaylist.getSmallImageUrl()).fit().centerCrop().into(coverImage);
+                    mSelectedPlaylistHolder.setVisibility(View.VISIBLE);
+                    mSelectedPlaylistHolder.addView(selectedPlaylistView);
+                    mSelectedPlaylistHolder.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, PlaylistPickerActivity.class);
+                            intent.putParcelableArrayListExtra(INTENT_EXTRA_PLAYLISTS_LIST, mPlaylistList);
+                            startActivityForResult(intent, GET_PLAYLIST);
+                        }
+                    });
+                }
+            }
+            if (resultCode == AppCompatActivity.RESULT_CANCELED) {
+                if (mSelectedPlaylistHolder.getVisibility() != View.VISIBLE)
+                    mConnectButton.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void getCurrentUserPlaylists(String url, final OnDataRetrieved onDataRetrieved) {
