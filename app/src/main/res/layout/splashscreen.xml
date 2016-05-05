@@ -33,6 +33,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="25dp"
         app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
         <android.support.design.widget.TextInputEditText
@@ -85,4 +86,20 @@
             android:textColor="@android:color/white" />
 
     </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/selected_playlist_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:visibility="gone" />
+
 </LinearLayout>

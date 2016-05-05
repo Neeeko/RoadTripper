@@ -3,8 +3,6 @@ package com.neekoentertainment.roadtripper.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
-import android.media.Image;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,11 +26,7 @@ import com.deezer.sdk.network.request.DeezerRequest;
 import com.deezer.sdk.network.request.DeezerRequestFactory;
 import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.JsonRequestListener;
-import com.deezer.sdk.network.request.event.RequestListener;
-import com.deezer.sdk.player.Player;
 import com.deezer.sdk.player.PlaylistPlayer;
-import com.deezer.sdk.player.event.BufferState;
-import com.deezer.sdk.player.event.OnBufferStateChangeListener;
 import com.deezer.sdk.player.event.PlayerState;
 import com.deezer.sdk.player.event.PlayerWrapperListener;
 import com.deezer.sdk.player.exception.TooManyPlayersExceptions;
@@ -125,7 +118,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                                     dialog.dismiss();
                                 }
                             })
-                            .setTitle("Follow a friend!")
+                            .setTitle(getString(R.string.dialog_title))
                             .create()
                             .show();
                 }
@@ -146,9 +139,20 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mPlaylistPlayer != null && mPlaylistId != -1) {
+            mPlaylistPlayer.stop();
+            mPlaylistPlayer.release();
+        }
+        super.onBackPressed();
+    }
+
     protected void initializeUiElements() {
-        TextView titleTxt = (TextView) findViewById(R.id.titleText);
-        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+        changeUIButtonState(false);
+
+        TextView titleTxt = (TextView) findViewById(R.id.title_text);
+        TextView artistTxt = (TextView) findViewById(R.id.artist_text);
 
         if (titleTxt != null)
             titleTxt.setSelected(true);
@@ -170,7 +174,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                         List<Track> trackList = (List<Track>) result;
 
                         if (result == null || ((List<Track>) result).size() == 0) {
-                            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.playerLayout);
+                            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.player_layout);
                             FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.fab);
 
                             if (addFab != null) {
@@ -188,21 +192,21 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                             if (playerLayout != null)
                                 playerLayout.setVisibility(View.GONE);
 
-                            Toast.makeText(HomeActivity.this, "The playlist is empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this, getString(R.string.empty_playlist), Toast.LENGTH_SHORT).show();
                         } else {
                             mFirstSongTitle = trackList.get(0).getTitle();
                             mFirstSongArtistName = trackList.get(0).getArtist().getName();
                             mFirstSongAlbumUrl = trackList.get(0).getAlbum().getCoverUrl();
 
-                            TextView titleTxt = (TextView) findViewById(R.id.titleText);
-                            TextView artistTxt = (TextView) findViewById(R.id.artistText);
+                            TextView titleTxt = (TextView) findViewById(R.id.title_text);
+                            TextView artistTxt = (TextView) findViewById(R.id.artist_text);
 
                             if (titleTxt != null)
                                 titleTxt.setText(trackList.get(0).getTitle());
                             if (artistTxt != null)
                                 artistTxt.setText(trackList.get(0).getArtist().getName());
 
-                            ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+                            ImageView albumImg = (ImageView) findViewById(R.id.album_img);
                             if (albumImg != null)
                                 Picasso.with(getApplicationContext()).load(trackList.get(0).getAlbum().getCoverUrl()).fit().centerCrop().into(albumImg);
                         }
@@ -225,7 +229,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                 Log.e(TAG, e.getMessage());
             }
         } else {
-            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.playerLayout);
+            RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.player_layout);
             FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.fab);
 
             if (addFab != null) {
@@ -243,6 +247,23 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
             if (playerLayout != null)
                 playerLayout.setVisibility(View.GONE);
         }
+        changeUIButtonState(true);
+    }
+
+    protected void changeUIButtonState(boolean enabled) {
+        ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
+        ImageButton nextButton = (ImageButton) findViewById(R.id.next_button);
+
+        if (prevButton != null) {
+            prevButton.setEnabled(enabled);
+        }
+        if (playPauseButton != null) {
+            playPauseButton.setEnabled(enabled);
+        }
+        if (nextButton != null) {
+            nextButton.setEnabled(enabled);
+        }
     }
 
     public void onPrevClicked(View v) {
@@ -258,12 +279,12 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
 
         if (mPlaylistPlayer != null && mPlaylistPlayer.getPlayerState() == PlayerState.PLAYING)
         {
-            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
             if (playPauseButton != null)
                 playPauseButton.setBackgroundResource(R.drawable.playbutton);
             mPlaylistPlayer.pause();
         } else if (mPlaylistPlayer != null && mPlaylistPlayer.getPlayerState() == PlayerState.PAUSED) {
-            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
             if (playPauseButton != null)
                 playPauseButton.setBackgroundResource(R.drawable.pausebutton);
             mPlaylistPlayer.play();
@@ -271,7 +292,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                 mPlaylistPlayer.getPlayerState() == PlayerState.STOPPED ||
                 mPlaylistPlayer.getPlayerState() == PlayerState.PLAYBACK_COMPLETED)) {
             mPlaylistPlayer.playPlaylist(mPlaylistId);
-            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+            ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
             if (playPauseButton != null)
                 playPauseButton.setBackgroundResource(R.drawable.pausebutton);
         }
@@ -320,6 +341,8 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 LocationRequest locationRequest = getLocationRequest();
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, HomeActivity.this);
+                mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+                mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
             }
         });
     }
@@ -377,19 +400,19 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onAllTracksEnded() {
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
         if (playPauseButton != null)
             playPauseButton.setBackgroundResource(R.drawable.playbutton);
 
-        TextView titleTxt = (TextView) findViewById(R.id.titleText);
-        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+        TextView titleTxt = (TextView) findViewById(R.id.title_text);
+        TextView artistTxt = (TextView) findViewById(R.id.artist_text);
 
         if (titleTxt != null)
             titleTxt.setText(mFirstSongTitle);
         if (artistTxt != null)
             artistTxt.setText(mFirstSongArtistName);
 
-        ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+        ImageView albumImg = (ImageView) findViewById(R.id.album_img);
         if (albumImg != null)
             Picasso.with(getApplicationContext()).load(mFirstSongAlbumUrl).fit().centerCrop().into(albumImg);
 
@@ -398,19 +421,19 @@ public class HomeActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onPlayTrack(PlayableEntity playableEntity) {
 
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
         if (playPauseButton != null)
             playPauseButton.setBackgroundResource(R.drawable.pausebutton);
 
-        TextView titleTxt = (TextView) findViewById(R.id.titleText);
-        TextView artistTxt = (TextView) findViewById(R.id.artistText);
+        TextView titleTxt = (TextView) findViewById(R.id.title_text);
+        TextView artistTxt = (TextView) findViewById(R.id.artist_text);
 
         if (titleTxt != null)
             titleTxt.setText(mPlaylistPlayer.getCurrentTrack().getTitle());
         if (artistTxt != null)
             artistTxt.setText(mPlaylistPlayer.getCurrentTrack().getArtist().getName());
 
-        ImageView albumImg = (ImageView) findViewById(R.id.albumImg);
+        ImageView albumImg = (ImageView) findViewById(R.id.album_img);
         if (albumImg != null)
             Picasso.with(getApplicationContext()).load(mPlaylistPlayer.getCurrentTrack().getAlbum().getCoverUrl()).fit().centerCrop().into(albumImg);
     }
