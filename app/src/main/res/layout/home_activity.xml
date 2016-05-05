@@ -81,7 +81,6 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="@string/music_title"
                 android:textColor="@android:color/white"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -96,7 +95,6 @@
                 android:marqueeRepeatLimit ="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="@string/artist_title"
                 android:textColor="@color/lightGrey"
                 android:textSize="12sp" />
         </LinearLayout>
