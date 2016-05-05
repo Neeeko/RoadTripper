@@ -113,7 +113,7 @@ public class PlaylistPickerActivity extends AppCompatActivity {
             viewHolder.playlistTitle.setSelected(true);
             viewHolder.creator.setText(getItem(position).getCreator().getName());
             viewHolder.creator.setSelected(true);
-            Picasso.with(mContext).load(getItem(position).getSmallImageUrl()).fit().centerCrop().into(viewHolder.cover);
+            Picasso.with(mContext).load(getItem(position).getMediumImageUrl()).fit().centerCrop().into(viewHolder.cover);
             return convertView;
         }
 

@@ -151,7 +151,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                     title.setSelected(true);
                     creator.setText(selectedPlaylist.getCreator().getName());
                     title.setText(selectedPlaylist.getTitle());
-                    Picasso.with(this).load(selectedPlaylist.getSmallImageUrl()).fit().centerCrop().into(coverImage);
+                    Picasso.with(this).load(selectedPlaylist.getMediumImageUrl()).fit().centerCrop().into(coverImage);
                     mSelectedPlaylistHolder.setVisibility(View.VISIBLE);
                     mSelectedPlaylistHolder.addView(selectedPlaylistView);
                     mSelectedPlaylistHolder.setOnClickListener(new View.OnClickListener() {

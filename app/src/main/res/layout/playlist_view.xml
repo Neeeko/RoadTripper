@@ -5,28 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:layout_marginBottom="5dp"
     android:descendantFocusability="blocksDescendants"
     card_view:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="1dp"
-    card_view:cardUseCompatPadding="true">
+    card_view:cardUseCompatPadding="true"
+    >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:orientation="horizontal">
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@android:color/white"
+    android:orientation="horizontal"
+    >
 
         <ImageView
             android:id="@+id/playlist_cover"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:src="@drawable/music_icon" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            >
 
             <TextView
                 android:id="@+id/playlist_title"
@@ -40,8 +45,10 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:textSize="18sp" />
+                android:textColor="@color/darkGrey"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                />
 
             <TextView
                 android:id="@+id/playlist_creator"
@@ -55,8 +62,10 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:textColor="@android:color/holo_purple"
-                android:textSize="16sp" />
+                android:textColor="@color/lightGrey"
+                android:textSize="15sp"
+                />
         </LinearLayout>
     </LinearLayout>
-</android.support.v7.widget.CardView>
+
+    </android.support.v7.widget.CardView>
