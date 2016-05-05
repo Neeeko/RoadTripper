@@ -12,18 +12,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.deezer.sdk.model.PaginatedList;
 import com.deezer.sdk.model.Playlist;
@@ -38,7 +32,6 @@ import com.neekoentertainment.roadtripper.R;
 import com.neekoentertainment.roadtripper.application.RoadTripperApplication;
 import com.neekoentertainment.roadtripper.utils.MessagingManager;
 import com.neekoentertainment.roadtripper.utils.ServicesAuthentication;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 
@@ -52,6 +45,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
     public static final String DEEZER_PLAYLISTS_URL = "user/me/playlists";
     public static final String INTENT_EXTRA_USERNAME = "intent_extra_username";
     public static final String INTENT_EXTRA_PLAYLIST_ID = "intent_extra_playlist_id";
+    public static final String INTENT_EXTRA_PLAYLISTS_LIST = "intent_extra_playlists_list";
 
     private static final String TAG = "SplashScreenActivity";
 
@@ -81,6 +75,7 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
 
     private void connectToDeezer(final RelativeLayout connectButton) {
         final LinearLayout container = (LinearLayout) findViewById(R.id.container);
+        final Context context = this;
         mPlaylistList = new ArrayList<>();
         ServicesAuthentication.DeezerConnection mCallback = new ServicesAuthentication.DeezerConnection() {
             @Override
@@ -94,14 +89,8 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
                 getCurrentUserPlaylists(DEEZER_PLAYLISTS_URL, new OnDataRetrieved() {
                     @Override
                     public void onDataRetrieved() {
-                        final PlaylistsAdapter playlistsAdapter = new PlaylistsAdapter(getApplicationContext(), mPlaylistList);
-                        mListView.setAdapter(playlistsAdapter);
-                        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                mIdPlaylist = playlistsAdapter.getItem(position).getId();
-                            }
-                        });
+                        Intent intent = new Intent(context, PlaylistPickerActivity.class);
+                        intent.putParcelableArrayListExtra(INTENT_EXTRA_PLAYLISTS_LIST, mPlaylistList);
                     }
                 });
             }
@@ -255,61 +244,5 @@ public class SplashScreenActivity extends AppCompatActivity implements GoogleApi
 
     public interface OnDataRetrieved {
         void onDataRetrieved();
-    }
-
-    public class PlaylistsAdapter extends BaseAdapter {
-
-        private ArrayList<Playlist> mPlaylist;
-        private Context mContext;
-
-        public PlaylistsAdapter(Context context, ArrayList<Playlist> playlists) {
-            mPlaylist = playlists;
-            mContext = context;
-        }
-
-        @Override
-        public int getCount() {
-            return mPlaylist.size();
-        }
-
-        @Override
-        public Playlist getItem(int position) {
-            return mPlaylist.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return mPlaylist.get(position).hashCode();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder;
-            if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.playlist_view, parent, false);
-
-                viewHolder = new ViewHolder();
-                viewHolder.cover = (ImageView) convertView.findViewById(R.id.playlist_cover);
-                viewHolder.playlistTitle = (TextView) convertView.findViewById(R.id.playlist_title);
-                viewHolder.creator = (TextView) convertView.findViewById(R.id.playlist_creator);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            viewHolder.playlistTitle.setText(getItem(position).getTitle());
-            viewHolder.playlistTitle.setSelected(true);
-            viewHolder.creator.setText(getItem(position).getCreator().getName());
-            viewHolder.creator.setSelected(true);
-            Picasso.with(mContext).load(getItem(position).getSmallImageUrl()).fit().centerCrop().into(viewHolder.cover);
-            return convertView;
-        }
-
-        private class ViewHolder {
-            ImageView cover;
-            TextView playlistTitle;
-            TextView creator;
-        }
     }
 }

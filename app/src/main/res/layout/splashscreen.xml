@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lightBlue"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -17,18 +19,21 @@
         android:layout_marginTop="25dp"
         android:src="@drawable/logo" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_marginTop="25dp"
-        android:text="@string/app_name"
-        android:textColor="@color/colorPrimary"
-        android:textSize="50sp" />
+        android:src="@drawable/roadtripper" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/editText"
@@ -37,7 +42,9 @@
             android:hint="@string/enter_name"
             android:inputType="text"
             android:maxLines="1"
-            android:textColorHint="@color/colorPrimary" />
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -46,6 +53,7 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_material_blue"
         android:text="@string/confirm"
         android:textColor="@android:color/white" />
@@ -55,10 +63,11 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
         android:background="@drawable/btn_material_black">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/deezerLogo"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_alignParentLeft="true"
@@ -70,17 +79,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/imageView2"
-            android:layout_toRightOf="@+id/imageView2"
+            android:layout_toEndOf="@+id/deezerLogo"
+            android:layout_toRightOf="@+id/deezerLogo"
             android:text="@string/connect_deezer"
             android:textColor="@android:color/white" />
 
     </RelativeLayout>
-
-    <ListView
-        android:id="@+id/playlist_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:choiceMode="singleChoice"
-        android:visibility="gone" />
 </LinearLayout>
